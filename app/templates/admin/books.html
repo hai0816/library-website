@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block title %}Quản lý sách - LibNet{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="section-title">
+        <h2><i class="bi bi-book text-accent"></i> Quản lý sách</h2>
+    </div>
+
+    <div class="glass-card p-4 mb-4">
+        <h4 class="mb-3">Thêm sách</h4>
+        <form method="POST">
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <input type="text" name="title" class="form-control" placeholder="Tiêu đề" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="author" class="form-control" placeholder="Tác giả" required>
+                </div>
+                <div class="col-md-3">
+                    <select name="category_id" class="form-select">
+                        <option value="">Chưa phân loại</option>
+                        {% for c in categories %}
+                        <option value="{{ c.id }}">{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-accent w-100">Thêm</button>
+                </div>
+                <div class="col-12">
+                    <textarea name="description" class="form-control" placeholder="Mô tả sách"></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="glass-card p-0 overflow-hidden">
+        <div class="table-responsive">
+            <table class="custom-table mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tiêu đề</th>
+                        <th>Tác giả</th>
+                        <th>Thể loại</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in books %}
+                    <tr>
+                        <td>{{ b.id }}</td>
+                        <td>{{ b.title }}</td>
+                        <td>{{ b.author }}</td>
+                        <td>{{ b.category.name if b.category else '—' }}</td>
+                        <td>
+                            {% if b.is_available %}
+                            <span class="badge-available">Có sẵn</span>
+                            {% else %}
+                            <span class="badge-borrowed">Đã mượn</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#editBook{{ b.id }}">Sửa</button>
+                            <form action="{{ url_for('admin.delete_book', book_id=b.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Xóa sách này?');">
+                                <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% for b in books %}
+<div class="modal fade" id="editBook{{ b.id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <form action="{{ url_for('admin.update_book', book_id=b.id) }}" method="POST">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">Sửa sách #{{ b.id }}</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Tiêu đề</label>
+                        <input type="text" name="title" class="form-control" value="{{ b.title }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tác giả</label>
+                        <input type="text" name="author" class="form-control" value="{{ b.author }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Thể loại</label>
+                        <select name="category_id" class="form-select">
+                            <option value="">Chưa phân loại</option>
+                            {% for c in categories %}
+                            <option value="{{ c.id }}" {% if b.category_id == c.id %}selected{% endif %}>{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Trạng thái</label>
+                        <select name="is_available" class="form-select">
+                            <option value="1" {% if b.is_available %}selected{% endif %}>Có sẵn</option>
+                            <option value="0" {% if not b.is_available %}selected{% endif %}>Đã mượn</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả</label>
+                        <textarea name="description" class="form-control">{{ b.description or '' }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="submit" class="btn btn-accent">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

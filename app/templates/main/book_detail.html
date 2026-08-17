@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}{{ book.title }} - LibNet{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="breadcrumb-custom">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('main.books') }}">Danh sách sách</a></li>
+            <li class="breadcrumb-item active">{{ book.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="glass-card p-4 animate-slideUp">
+        <div class="row g-4">
+            <!-- Book Cover -->
+            <div class="col-md-4">
+                <div class="book-detail-cover">
+                    <i class="bi bi-journal-richtext"></i>
+                </div>
+            </div>
+
+            <!-- Book Info -->
+            <div class="col-md-8">
+                <h2 class="mb-3">{{ book.title }}</h2>
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <div class="info-item">
+                            <span class="text-secondary"><i class="bi bi-pen"></i> Tác giả</span>
+                            <p class="text-white fw-semibold">{{ book.author }}</p>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="info-item">
+                            <span class="text-secondary"><i class="bi bi-tag"></i> Thể loại</span>
+                            <p class="text-white fw-semibold">{{ book.category.name if book.category else 'Chưa phân loại' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                {% if book.description %}
+                <div class="mb-4">
+                    <h5><i class="bi bi-text-paragraph text-accent"></i> Mô tả</h5>
+                    <p class="text-secondary">{{ book.description }}</p>
+                </div>
+                {% endif %}
+
+                <div class="mb-4">
+                    <h5><i class="bi bi-info-circle text-accent"></i> Trạng thái</h5>
+                    {% if book.is_available %}
+                        <span class="badge-available"><i class="bi bi-check-circle-fill"></i> Có sẵn - Sẵn sàng cho mượn</span>
+                    {% else %}
+                        <span class="badge-borrowed"><i class="bi bi-hourglass-split"></i> Đang được mượn</span>
+                    {% endif %}
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="d-flex gap-3 flex-wrap">
+                    {% if current_user.is_authenticated and book.is_available %}
+                    <form action="{{ url_for('user.borrow_book', book_id=book.id) }}" method="POST">
+                        <button type="submit" class="btn btn-accent btn-lg">
+                            <i class="bi bi-bookmark-plus"></i> Mượn sách
+                        </button>
+                    </form>
+                    {% elif not current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-accent btn-lg">
+                        <i class="bi bi-box-arrow-in-right"></i> Đăng nhập để mượn
+                    </a>
+                    {% else %}
+                    <button class="btn btn-outline-light btn-lg" disabled>
+                        <i class="bi bi-hourglass-split"></i> Sách đang được mượn
+                    </button>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('main.books') }}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-arrow-left"></i> Quay lại
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

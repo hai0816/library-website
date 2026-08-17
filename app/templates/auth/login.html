@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Đăng nhập - LibNet{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+    <div class="glass-card auth-card">
+        <div class="text-center mb-4">
+            <i class="bi bi-book-half" style="font-size: 2.5rem; color: var(--accent);"></i>
+            <h2 class="mt-2">Đăng nhập</h2>
+            <p class="text-secondary mb-0">Chào mừng trở lại LibNet</p>
+        </div>
+        <form method="POST">
+            <div class="mb-3">
+                <label class="form-label">Tên đăng nhập</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Mật khẩu</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-accent w-100">Đăng nhập</button>
+        </form>
+        <p class="text-center text-secondary mt-3 mb-0">
+            Chưa có tài khoản? <a href="{{ url_for('auth.register') }}">Đăng ký</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

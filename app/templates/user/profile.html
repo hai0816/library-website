@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Hồ sơ - LibNet{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="section-title">
+        <h2><i class="bi bi-person-circle text-accent"></i> Hồ sơ cá nhân</h2>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="glass-card p-4 text-center">
+                <img src="{{ url_for('static', filename='uploads/avatars/' + current_user.avatar) }}"
+                     class="avatar-img mb-3" alt="Avatar"
+                     onerror="this.src='{{ url_for('static', filename='uploads/avatars/default.svg') }}'">
+                <h5 class="mb-1">{{ current_user.full_name or current_user.username }}</h5>
+                <p class="text-secondary mb-3">{{ current_user.role }}</p>
+                <form method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="action" value="avatar">
+                    <div class="mb-3">
+                        <input class="form-control" type="file" name="avatar" accept="image/*">
+                    </div>
+                    <button type="submit" class="btn btn-accent w-100">
+                        <i class="bi bi-upload"></i> Tải ảnh đại diện
+                    </button>
+                </form>
+                <a href="{{ url_for('user.change_password') }}" class="btn btn-outline-light w-100 mt-2">
+                    <i class="bi bi-key"></i> Đổi mật khẩu
+                </a>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="glass-card p-4">
+                <h4 class="mb-3">Cập nhật hồ sơ</h4>
+                <form method="POST">
+                    <input type="hidden" name="action" value="profile">
+                    <div class="mb-3">
+                        <label class="form-label">Tên đăng nhập</label>
+                        <input type="text" name="username" class="form-control" value="{{ current_user.username }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Họ và tên</label>
+                        <input type="text" name="full_name" class="form-control" value="{{ current_user.full_name or '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" value="{{ current_user.email or '' }}">
+                    </div>
+                    <button type="submit" class="btn btn-accent">
+                        <i class="bi bi-save"></i> Lưu thay đổi
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

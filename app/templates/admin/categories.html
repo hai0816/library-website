@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Quản lý thể loại - LibNet{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="section-title">
+        <h2><i class="bi bi-tags text-accent"></i> Quản lý thể loại</h2>
+    </div>
+
+    <div class="glass-card p-4 mb-4">
+        <form method="POST" class="row g-2">
+            <div class="col-md-8">
+                <input type="text" name="name" class="form-control" placeholder="Tên thể loại" required>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-accent w-100">Thêm thể loại</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="row g-3">
+        {% for c in categories %}
+        <div class="col-md-4">
+            <div class="glass-card category-card">
+                <h5>{{ c.name }}</h5>
+                <p class="text-secondary">{{ c.books|length }} sách</p>
+                <button class="btn btn-outline-light btn-sm" data-bs-toggle="modal" data-bs-target="#editCat{{ c.id }}">Sửa</button>
+                <form action="{{ url_for('admin.delete_category', cat_id=c.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Xóa thể loại này?');">
+                    <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-tags"></i>
+            <p>Chưa có thể loại nào</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% for c in categories %}
+<div class="modal fade" id="editCat{{ c.id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <form action="{{ url_for('admin.update_category', cat_id=c.id) }}" method="POST">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">Sửa thể loại</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Tên thể loại</label>
+                    <input type="text" name="name" class="form-control" value="{{ c.name }}" required>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="submit" class="btn btn-accent">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Lịch sử mượn - LibNet{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="section-title">
+        <h2><i class="bi bi-clock-history text-accent"></i> Lịch sử mượn sách</h2>
+    </div>
+    <div class="glass-card p-0 overflow-hidden">
+        {% if records %}
+        <div class="table-responsive">
+            <table class="custom-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Mã</th>
+                        <th>Sách</th>
+                        <th>Ngày mượn</th>
+                        <th>Ngày trả</th>
+                        <th>Trạng thái</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in records %}
+                    <tr>
+                        <td>#{{ r.id }}</td>
+                        <td>
+                            {% if r.book %}
+                            <a href="{{ url_for('main.book_detail', book_id=r.book.id) }}">{{ r.book.title }}</a>
+                            {% else %}
+                            Sách đã xóa
+                            {% endif %}
+                        </td>
+                        <td>{{ r.borrow_date.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>{{ r.return_date.strftime('%d/%m/%Y %H:%M') if r.return_date else '—' }}</td>
+                        <td>
+                            {% if r.status == 'borrowed' %}
+                            <span class="badge-borrowed">Đang mượn</span>
+                            {% else %}
+                            <span class="badge-available">Đã trả</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if r.status == 'borrowed' %}
+                            <form action="{{ url_for('user.return_book') }}" method="POST">
+                                <input type="hidden" name="record_id" value="{{ r.id }}">
+                                <button type="submit" class="btn btn-accent btn-sm">Trả sách</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="bi bi-journal-x"></i>
+            <p>Bạn chưa mượn cuốn sách nào</p>
+            <a href="{{ url_for('main.books') }}" class="btn btn-accent">Xem danh sách sách</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

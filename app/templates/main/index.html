@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}LibNet - Thư viện trực tuyến{% endblock %}
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <i class="bi bi-book-half hero-icon d-none d-lg-block"></i>
+    <div class="container">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-7 animate-slideUp">
+                <h1 class="display-3 fw-bold mb-4">
+                    Khám phá thế giới<br><span class="text-accent">tri thức</span>
+                </h1>
+                <p class="lead text-secondary mb-4">
+                    Hệ thống thư viện trực tuyến với hàng nghìn đầu sách. 
+                    Mượn sách dễ dàng, quản lý tiện lợi.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{{ url_for('main.books') }}" class="btn btn-accent btn-lg">
+                        <i class="bi bi-search"></i> Khám phá sách
+                    </a>
+                    {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-person-plus"></i> Đăng ký miễn phí
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<div class="container py-5">
+    <div class="row g-4 mb-5">
+        <div class="col-md-4 animate-fadeIn">
+            <div class="stat-card bg-gradient-1">
+                <div class="stat-icon"><i class="bi bi-book-fill"></i></div>
+                <div class="stat-number">{{ stats.books }}</div>
+                <div class="stat-label">Đầu sách</div>
+            </div>
+        </div>
+        <div class="col-md-4 animate-fadeIn">
+            <div class="stat-card bg-gradient-2">
+                <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+                <div class="stat-number">{{ stats.users }}</div>
+                <div class="stat-label">Người dùng</div>
+            </div>
+        </div>
+        <div class="col-md-4 animate-fadeIn">
+            <div class="stat-card bg-gradient-4">
+                <div class="stat-icon"><i class="bi bi-arrow-left-right"></i></div>
+                <div class="stat-number">{{ stats.borrows }}</div>
+                <div class="stat-label">Lượt mượn</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Books -->
+    <div class="section-title">
+        <h2><i class="bi bi-stars text-accent"></i> Sách mới cập nhật</h2>
+    </div>
+    
+    {% if recent_books %}
+    <div class="row g-4">
+        {% for book in recent_books %}
+        <div class="col-lg-3 col-md-4 col-sm-6 animate-fadeIn">
+            <div class="glass-card book-card">
+                <div class="book-cover">
+                    <i class="bi bi-journal-richtext"></i>
+                </div>
+                <div class="book-info">
+                    <h5 class="book-title">{{ book.title }}</h5>
+                    <p class="book-author"><i class="bi bi-pen"></i> {{ book.author }}</p>
+                    <div class="book-meta">
+                        {% if book.is_available %}
+                            <span class="badge-available"><i class="bi bi-check-circle"></i> Có sẵn</span>
+                        {% else %}
+                            <span class="badge-borrowed"><i class="bi bi-hourglass-split"></i> Đã mượn</span>
+                        {% endif %}
+                        <a href="{{ url_for('main.book_detail', book_id=book.id) }}" class="btn btn-accent btn-sm">
+                            Xem <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{{ url_for('main.books') }}" class="btn btn-outline-light btn-lg">
+            Xem tất cả sách <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="bi bi-inbox"></i>
+        <p>Chưa có sách nào trong thư viện</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

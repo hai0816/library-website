@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}Danh sách sách - LibNet{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="breadcrumb-custom">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">Trang chủ</a></li>
+            <li class="breadcrumb-item active">Danh sách sách</li>
+        </ol>
+    </nav>
+
+    <div class="section-title">
+        <h2><i class="bi bi-collection text-accent"></i> Danh sách sách</h2>
+    </div>
+
+    <!-- Search -->
+    <form action="{{ url_for('main.books') }}" method="GET">
+        <div class="search-box mb-4">
+            <i class="bi bi-search"></i>
+            <input type="text" name="q" placeholder="Tìm kiếm theo tên sách..." value="{{ search_query }}">
+            <button type="submit" class="btn btn-accent">Tìm kiếm</button>
+        </div>
+    </form>
+
+    {% if search_query %}
+    <!-- Vulnerable: Reflected XSS here using 'safe' filter -->
+    <div class="alert alert-info"><i class="bi bi-info-circle"></i> Kết quả tìm kiếm cho: <strong>{{ search_query | safe }}</strong></div>
+    {% endif %}
+
+    <!-- Category Filter -->
+    <div class="category-pills">
+        <a href="{{ url_for('main.books') }}" class="pill {% if not request.args.get('category') and not search_query %}active{% endif %}">
+            Tất cả
+        </a>
+        {% for cat in categories %}
+        <a href="{{ url_for('main.books', category=cat.id) }}" class="pill {% if request.args.get('category') == cat.id|string %}active{% endif %}">
+            {{ cat.name }}
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Books Grid -->
+    {% if books %}
+    <div class="row g-4">
+        {% for book in books %}
+        <div class="col-lg-3 col-md-4 col-sm-6 animate-fadeIn">
+            <div class="glass-card book-card">
+                <div class="book-cover">
+                    <i class="bi bi-journal-richtext"></i>
+                </div>
+                <div class="book-info">
+                    <h5 class="book-title">{{ book.title }}</h5>
+                    <p class="book-author"><i class="bi bi-pen"></i> {{ book.author }}</p>
+                    {% if book.category %}
+                    <p class="book-author"><i class="bi bi-tag"></i> {{ book.category.name }}</p>
+                    {% endif %}
+                    <div class="book-meta">
+                        {% if book.is_available %}
+                            <span class="badge-available"><i class="bi bi-check-circle"></i> Có sẵn</span>
+                        {% else %}
+                            <span class="badge-borrowed"><i class="bi bi-hourglass-split"></i> Đã mượn</span>
+                        {% endif %}
+                        <a href="{{ url_for('main.book_detail', book_id=book.id) }}" class="btn btn-accent btn-sm">
+                            Chi tiết
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="bi bi-search"></i>
+        <p>Không tìm thấy sách nào</p>
+        <a href="{{ url_for('main.books') }}" class="btn btn-accent">Xem tất cả sách</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
